@@ -4,9 +4,9 @@
         <img src="/SampleLogo.png" style="height:100%"/>
     </div>
     <div class="flexset">
-        <div>商品一覽</div>
+        <div><RouterLink to="/productlist">商品一覽</RouterLink></div>
         <div>
-            <button>Login</button>
+            <button><RouterLink to="/test">Login</RouterLink></button>
         </div>
     </div>
   </div>
