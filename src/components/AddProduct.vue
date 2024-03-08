@@ -1,5 +1,5 @@
 <template>
-      <div>
+      <div id="addMmodelComponent">
         <div class="">
             <div class="modal-content border-0">
             <div class="modal-header bg-dark text-white">

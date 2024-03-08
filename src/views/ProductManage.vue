@@ -55,6 +55,8 @@
 <script>
 import AddProduct from '@/components/AddProduct.vue'
 
+const addMmodelComponent = ''
+
 export default {
   components: {
     AddProduct
@@ -69,9 +71,14 @@ export default {
   methods: {
     openaddmodel () {
       console.log('123')
-      const addComponent = this.$refs.AddProduct
-      addComponent.openModal()
+      addMmodelComponent.show()
     }
+  },
+
+  mounted () {
+          addproductModal = new bootstrap.Modal(document.getElementById('addMmodelComponent'), {
+            keyboard: false
+        })
   }
 }
 </script>
