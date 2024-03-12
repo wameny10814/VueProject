@@ -63,6 +63,39 @@
     </div>
   </div>
 </template>
+<script>
+import axios from 'axios'
+export default {
+  data () {
+    return {
+      showAddProduct: false,
+      loginstatus: true
+    }
+  },
+
+  mounted () {
+    console.log('vvvv')
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
+    axios.defaults.headers.common.Authorization = token
+    const api = 'https://ec-course-api.hexschool.io/v2/api/user/check'
+    axios.post(api)
+      .then((response) => {
+        console.log('success', response)
+        if (response.status === 200) {
+          console.log('200')
+          this.loginstatus = true
+        } else {
+          console.log('!200')
+          this.loginstatus = false
+        }
+      })
+      .catch((error) => {
+        console.log('error', error)
+        this.loginstatus = false
+      })
+  }
+}
+</script>
 <style scoped>
 *{
 outline:0px solid}

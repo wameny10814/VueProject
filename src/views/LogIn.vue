@@ -1,5 +1,4 @@
 <template>
-<div>
     <h2>Welcome back</h2>
     <div class="card">
         <div class="title">
@@ -8,22 +7,52 @@
         <div>
             <div>
                 <div>
-                  <input type="text" placeholder="帳號" class="account">
+                  <input type="text" placeholder="帳號" class="account" v-model="data.username"/>
                 </div>
                 <div>
-                  <input type="text" placeholder="密碼" class="psd">
+                  <input type="password" placeholder="密碼" class="psd" v-model="data.password"/>
                 </div>
             </div>
             <div style="text-align:end">
-               <button class="login" type="button">Login</button>
+               <button type="submit" class="login"  @click="login()" >
+                Login
+               </button>
             </div>
         </div>
-
     </div>
-</div>
 </template>
 
 <script>
+import axios from 'axios'
+export default {
+  data () {
+    return {
+      data: {
+        username: '',
+        password: ''
+      }
+    }
+  },
+
+  methods: {
+    login () {
+      console.log('login')
+      const api = 'https://ec-course-api.hexschool.io/v2/admin/signin'
+      axios.post(api, this.data)
+        .then((response) => {
+          const { token, expired } = response.data
+          document.cookie = `hexToken=${token};expires=${new Date(expired)}; path=/`
+          this.$router.push({ name: 'Home' })
+        })
+        .catch((error) => {
+          console.log('error', error)
+          this.loginstatus = false
+          alert('登入失敗')
+        })
+    }
+  }
+
+}
 
 </script>
 

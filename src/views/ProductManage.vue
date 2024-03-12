@@ -1,7 +1,7 @@
 <template>
-  <h1>訂單管理</h1>
+  <h1>產品管理</h1>
     <div class="text-end mt-4">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMmodelComponent" @click="openaddmodel">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMmodelComponent" @click="openaddmodel('add','','')">
           新增產品
       </button>
   </div>
@@ -27,19 +27,19 @@
       </tr>
       </thead>
       <tbody>
-      <tr>
-          <td>category</td>
-          <td>title</td>
-          <td>origin_price</td>
-          <td>price</td>
+      <tr v-for="(item) in displayitem" :key="item.id">
+          <td>{{item.category}}</td>
+          <td>{{item.title}}</td>
+          <td>{{item.origin_price}}</td>
+          <td>{{item.price}}</td>
           <td>
-          <span class="text-success">啟用</span>
-          <span>未啟用</span>
+          <span class="text-success" v-if="item.is_enabled">啟用</span>
+          <span v-else>未啟用</span>
           </td>
           <td>
           <div class="btn-group">
 
-              <button type="button" class="btn btn-outline-primary btn-sm" @click="openmodel('editMmodelComponent',item)">編輯</button>
+              <button type="button" class="btn btn-outline-primary btn-sm" @click="openaddmodel('edit',item.id,item)">編輯</button>
               <button type="button" class="btn btn-outline-danger btn-sm" @click="showdeleteAlert(item)" >
                   刪除
               </button>
@@ -49,13 +49,30 @@
       </tbody>
   </table>
 
-   <AddProduct  ref="AddProduct"/>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li class="page-item"><a class="page-link" href="#">1</a></li>
+      <li class="page-item"><a class="page-link" href="#">2</a></li>
+      <li class="page-item"><a class="page-link" href="#">3</a></li>
+      <li class="page-item">
+        <a class="page-link" href="#" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+   <AddProduct v-if="showAddProduct" :apitype="modeltype" />
 </template>
 
 <script>
 import AddProduct from '@/components/AddProduct.vue'
-
-const addMmodelComponent = ''
+import axios from 'axios'
 
 export default {
   components: {
@@ -64,22 +81,62 @@ export default {
 
   data () {
     return {
-      test: 'data'
+      showAddProduct: true,
+      loginstatus: true,
+      displayitem: {},
+      editTemp: {
+        data: {}
+      },
+      modeltype: {
+        type: '',
+        id: '',
+        item: {}
+      }
     }
   },
 
   methods: {
-    openaddmodel () {
-      console.log('123')
-      addMmodelComponent.show()
+    openaddmodel (type, id, item) {
+      // this.showAddProduct = !this.showAddProduct
+      this.modeltype.type = type
+      this.modeltype.id = id
+      this.modeltype.item = item
+    },
+
+    displayData () {
+      console.log('displayData')
+      // to do ...............................分頁功能
+      const api = 'https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/products?page=1'
+      axios.get(api)
+        .then((response) => {
+          console.log('response', response.data.products)
+          this.displayitem = response.data.products
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    },
+
+    editData (id) {
+      console.log('editData', id)
+      // to do ...............................分頁功能
+      const api = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/product/${id}`
+      axios.put(api, this.editTemp)
+        .then((response) => {
+          console.log('response', response.data.products)
+          this.displayitem = response.data.products
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
     }
   },
 
   mounted () {
-          addproductModal = new bootstrap.Modal(document.getElementById('addMmodelComponent'), {
-            keyboard: false
-        })
+    console.log('mounted')
+    this.displayData()
   }
+
 }
 </script>
 

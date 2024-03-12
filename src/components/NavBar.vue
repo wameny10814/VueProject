@@ -11,11 +11,58 @@
             <RouterLink to="/productManage" class="me-2 navlinks">訂單管理</RouterLink>
         </div>
         <div>
-            <button class="loginBtn"><RouterLink to="/test" style="text-decoration:none;color:#8FB27A;">Login</RouterLink></button>
+            <button class="loginBtn" v-if="loginstatus == false"><RouterLink to="/test" style="text-decoration:none;color:#8FB27A;">Login</RouterLink></button>
+            <button @click="logout" v-if="loginstatus == true">登出</button>
         </div>
     </div>
+    {{loginstatus}}
   </div>
 </template>
+<script>
+import axios from 'axios'
+export default {
+  data () {
+    return {
+      showAddProduct: false,
+      loginstatus: true
+    }
+  },
+
+  methods: {
+    logout () {
+      console.log('logout')
+      const logoutapi = 'https://ec-course-api.hexschool.io/v2/logout'
+      axios.post(logoutapi)
+        .then((response) => {
+          console.log('登出成功')
+          this.loginstatus = false
+        })
+    }
+  },
+
+  mounted () {
+    console.log('vvvv')
+    const token = document.cookie.replace(/(?:(?:^|.*;\s*)hexToken\s*=\s*([^;]*).*$)|^.*$/, '$1')
+    axios.defaults.headers.common.Authorization = token
+    const api = 'https://ec-course-api.hexschool.io/v2/api/user/check'
+    axios.post(api)
+      .then((response) => {
+        console.log('success', response)
+        if (response.status === 200) {
+          console.log('200')
+          this.loginstatus = true
+        } else {
+          console.log('!200')
+          this.loginstatus = false
+        }
+      })
+      .catch((error) => {
+        console.log('error', error)
+        this.loginstatus = false
+      })
+  }
+}
+</script>
 <style scoped>
 *{
     outline:0px solid;
