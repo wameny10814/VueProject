@@ -1,7 +1,7 @@
 <template>
   <h1>產品管理</h1>
     <div class="text-end mt-4">
-      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMmodelComponent" @click="openaddmodel('add','','')">
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMmodelComponent" @click="openaddmodel('add',0,modeltype.item,)">
           新增產品
       </button>
   </div>
@@ -51,23 +51,25 @@
 
   <nav aria-label="Page navigation example">
     <ul class="pagination">
-      <li class="page-item">
-        <a class="page-link" href="#" aria-label="Previous">
+      <li class="page-item" :class="{'disabled': pages.has_pre === false}" @click="displayData('prev')">
+        <span class="page-link" aria-label="Previous">
           <span aria-hidden="true">&laquo;</span>
-        </a>
+        </span>
       </li>
-      <li class="page-item"><a class="page-link" href="#">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
-      <li class="page-item">
-        <a class="page-link" href="#" aria-label="Next">
+      <li class="page-item" v-for="(page, index) in pages.total_pages" :key="index" :class="{'active': page === pages.current_page}">
+        <span class="page-link"  @click="displayData(page)">
+          {{page}}
+        </span>
+      </li>
+      <li class="page-item" :class="{'disabled': pages.has_next === false}" @click="displayData('next')">
+        <span class="page-link" aria-label="Next">
           <span aria-hidden="true">&raquo;</span>
-        </a>
+        </span>
       </li>
     </ul>
   </nav>
 
-   <AddProduct v-if="showAddProduct" :apitype="modeltype" />
+   <AddProduct v-if="showAddProduct" :apitype="modeltype" @redenerstatus="controllerRender" />
 </template>
 
 <script>
@@ -90,8 +92,27 @@ export default {
       modeltype: {
         type: '',
         id: '',
-        item: {}
-      }
+        item: {
+
+          title: '',
+          content: '',
+          category: '',
+          imagesUrl: [
+            '圖片網址一',
+            '圖片網址二',
+            '圖片網址三'
+          ],
+          is_enabled: 1,
+          price: 0,
+          origin_price: 0,
+          unit: '本',
+          description: '',
+          imageUrl: ''
+
+        }
+      },
+      pages: {},
+      rerender: false
     }
   },
 
@@ -103,14 +124,20 @@ export default {
       this.modeltype.item = item
     },
 
-    displayData () {
-      console.log('displayData')
+    displayData (nowpage = 1) {
+      console.log('displayData', nowpage)
+      if (nowpage === 'prev') {
+        nowpage = this.current_page - 1
+      } else if (nowpage === 'next') {
+        nowpage = this.current_page + 1
+      }
       // to do ...............................分頁功能
-      const api = 'https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/products?page=1'
+      const api = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/products?page=${nowpage}`
       axios.get(api)
         .then((response) => {
-          console.log('response', response.data.products)
+          console.log('response', response.data)
           this.displayitem = response.data.products
+          this.pages = response.data.pagination
         })
         .catch((error) => {
           console.log('error', error)
@@ -129,6 +156,22 @@ export default {
         .catch((error) => {
           console.log('error', error)
         })
+    },
+
+    controllerRender (stauts) {
+      console.log('controllerRender', stauts)
+      this.rerender = stauts
+      if (this.rerender === true) {
+        const api = 'https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/products?page=2'
+        axios.get(api)
+          .then((response) => {
+            console.log('response', response.data.products)
+            this.displayitem = response.data.products
+          })
+          .catch((error) => {
+            console.log('error', error)
+          })
+      }
     }
   },
 

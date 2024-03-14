@@ -3,7 +3,7 @@
     <form class="row g-3">
         <div class="col-md-6">
             <label for="inputName" class="form-label">品名</label>
-            <input type="text" class="form-control" id="inputName" v-model="datato.data.title">
+            <input type="text" class="form-control" id="inputName" v-model="datato.data.title" />
         </div>
         <div class="col-md-6">
             <label for="inputCategory" class="form-label">分類</label>
@@ -11,11 +11,11 @@
         </div>
         <div class="col-6">
             <label for="inputOriginPrice" class="form-label">原價</label>
-            <input type="text" class="form-control" id="inputOriginPrice" v-model="datato.data.origin_price">
+            <input type="number" class="form-control" id="inputOriginPrice" v-model="datato.data.origin_price">
         </div>
             <div class="col-6">
             <label for="inputPrice" class="form-label">價格</label>
-            <input type="text" class="form-control" id="inputPrice" v-model="datato.data.price">
+            <input type="number" class="form-control" id="inputPrice" v-model="datato.data.price">
         </div>
         <div class="col-12">
             <label for="inputDescription" class="form-label">描述</label>
@@ -46,13 +46,14 @@
         </div>
     </form>
     {{apitype}}
-    <div>{{datato}}</div>
+    <div>{{datato.data}}</div>
 </template>
 <script>
 import axios from 'axios'
 
 export default {
   props: ['apitype'],
+  emits: ['redenerstatus'],
 
   data () {
     return {
@@ -74,7 +75,9 @@ export default {
           description: '',
           imageUrl: ''
         }
-      }
+      },
+
+      redenerstatus: false
 
     }
   },
@@ -83,25 +86,38 @@ export default {
     Addapi (type) {
       console.log('Add', type)
       if (type.type === 'add') {
+        console.log('in add api')
         const api = 'https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/product'
         axios.post(api, this.datato)
           .then((response) => {
-            console.log('response', response)
+            console.log('response111', response)
+            this.redenerstatus = true
+            this.emit()
           })
           .catch((error) => {
             console.log('error', error)
+            this.redenerstatus = false
           })
       } else if (type.type === 'edit') {
-        const editapi = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/product${type.id}`
+        console.log('in edit api')
+        const editapi = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/product/${type.id}`
         console.log('editapi', editapi)
         axios.put(editapi, this.datato)
           .then((response) => {
             console.log('editapi', response)
+            this.redenerstatus = true
+            this.emit()
           })
           .catch((error) => {
             console.log('error', error)
+            this.redenerstatus = false
           })
       }
+    },
+
+    emit () {
+      console.log('emit')
+      this.$emit('redenerstatus', this.redenerstatus)
     }
   },
 
@@ -112,7 +128,7 @@ export default {
   watch: {
     apitype: {
       handler (newValue) {
-        console.log('apitype change', this.apitype.item.data)
+        console.log('apitype change', this.apitype.item)
         this.datato.data = this.apitype.item
       },
       deep: true
