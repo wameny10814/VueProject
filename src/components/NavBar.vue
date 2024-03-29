@@ -8,7 +8,9 @@
             <RouterLink to="/" class="me-2 navlinks">首頁</RouterLink>|
             <RouterLink to="/productlist" class="me-2 navlinks">商品一覽</RouterLink>|
             <RouterLink to="/about" class="me-2 navlinks">About</RouterLink>
-            <RouterLink to="/productManage" class="me-2 navlinks">訂單管理</RouterLink>
+            <RouterLink to="/productManage" class="me-2 navlinks">產品管理</RouterLink>
+            <RouterLink to="/ordersmanage" class="me-2 navlinks">訂單管理</RouterLink>
+            <RouterLink to="/couponmanage" class="me-2 navlinks">優惠卷管理</RouterLink>
         </div>
         <div>
             <button class="loginBtn" v-if="loginstatus == false"><RouterLink to="/test" style="text-decoration:none;color:#8FB27A;">Login</RouterLink></button>
@@ -36,6 +38,7 @@ export default {
         .then((response) => {
           console.log('登出成功')
           this.loginstatus = false
+          document.cookie = 'hexToken=; expires=; path=/'
         })
     }
   },

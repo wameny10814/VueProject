@@ -30,6 +30,16 @@ const routes = [
     path: '/productManage',
     name: 'productManage',
     component: () => import('../views/ProductManage.vue')
+  },
+  {
+    path: '/ordersmanage',
+    name: 'ordersmanage',
+    component: () => import('../views/OrdersManage.vue')
+  },
+  {
+    path: '/couponmanage',
+    name: 'couponmanage',
+    component: () => import('../views/CouponManage.vue')
   }
 
 ]

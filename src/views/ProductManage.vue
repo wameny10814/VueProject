@@ -40,7 +40,7 @@
           <div class="btn-group">
 
               <button type="button" class="btn btn-outline-primary btn-sm" @click="openaddmodel('edit',item.id,item)">編輯</button>
-              <button type="button" class="btn btn-outline-danger btn-sm" @click="showdeleteAlert(item)" >
+              <button type="button" class="btn btn-outline-danger btn-sm" @click="showdeleteAlert(item.id)" >
                   刪除
               </button>
           </div>
@@ -48,6 +48,11 @@
       </tr>
       </tbody>
   </table>
+
+  <form action="https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/upload" enctype="multipart/form-data"  method="post">
+    <input type="file" name="file-to-upload">
+    <input type="submit" value="Upload">
+  </form>
 
   <nav aria-label="Page navigation example">
     <ul class="pagination">
@@ -102,7 +107,7 @@ export default {
             '圖片網址二',
             '圖片網址三'
           ],
-          is_enabled: 1,
+          is_enabled: false,
           price: 0,
           origin_price: 0,
           unit: '本',
@@ -121,7 +126,7 @@ export default {
       // this.showAddProduct = !this.showAddProduct
       this.modeltype.type = type
       this.modeltype.id = id
-      this.modeltype.item = item
+      this.modeltype.item = { ...item }
     },
 
     displayData (nowpage = 1) {
@@ -131,13 +136,14 @@ export default {
       } else if (nowpage === 'next') {
         nowpage = this.current_page + 1
       }
-      // to do ...............................分頁功能
+
       const api = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/products?page=${nowpage}`
       axios.get(api)
         .then((response) => {
           console.log('response', response.data)
           this.displayitem = response.data.products
           this.pages = response.data.pagination
+          // this.showAddProduct = false
         })
         .catch((error) => {
           console.log('error', error)
@@ -146,12 +152,14 @@ export default {
 
     editData (id) {
       console.log('editData', id)
-      // to do ...............................分頁功能
+
       const api = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/product/${id}`
       axios.put(api, this.editTemp)
         .then((response) => {
-          console.log('response', response.data.products)
+          console.log('response', response.data)
           this.displayitem = response.data.products
+          alert(response.data.message)
+          this.displayData()
         })
         .catch((error) => {
           console.log('error', error)
@@ -167,11 +175,48 @@ export default {
           .then((response) => {
             console.log('response', response.data.products)
             this.displayitem = response.data.products
+            this.displayData()
+            this.modeltype.type = ''
+            this.modeltype.id = ''
+            this.modeltype.item = {
+              title: '',
+              content: '',
+              category: '',
+              imagesUrl: [
+                '圖片網址一',
+                '圖片網址二',
+                '圖片網址三'
+              ],
+              is_enabled: false,
+              price: 0,
+              origin_price: 0,
+              unit: '本',
+              description: '',
+              imageUrl: ''
+            }
           })
           .catch((error) => {
             console.log('error', error)
           })
       }
+    },
+
+    showdeleteAlert (id) {
+      console.log('id', id)
+      const api = `https://ec-course-api.hexschool.io/v2/api/tsurusroute/admin/product/${id}`
+      axios.delete(api)
+        .then((response) => {
+          console.log('response', response)
+          alert(response.data.message)
+          this.displayData()
+        })
+        .catch((error) => {
+          console.log('error', error)
+        })
+    },
+
+    getapiResult (response) {
+      console.log('apiresponse', response)
     }
   },
 
